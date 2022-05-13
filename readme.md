@@ -11,11 +11,21 @@ Current features include:
   * A simpler interface for generating images with code.
   * Also a simpler interface for interacting with the generated images.
 
+# Installation
+
+Clone this repository and navigate to it in your terminal. Then run:
+
+`pip install -e .`
+
+If you're running in a Jupyter notebook, you may need to restart your runtime after finishing the install.
+
 ## Example Usage
 
 ### OpenAI's "Improved Diffusion" Model
 
 [Link](https://github.com/openai/improved-diffusion)
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Netruk44/notebook-image-helper/blob/master/notebooks/improved_diffusion.ipynb)
 
 After training your model, you can generate images with the following code in a Jupyter Notebook:
 
