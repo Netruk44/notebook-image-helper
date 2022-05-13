@@ -90,6 +90,7 @@ class ImageHelper(object):
 
             if show_progress:
                 bar.update(batch_size)
+            cur_sample_count += batch_size
         
         all_samples = torch.cat(all_samples, dim=0)
 
