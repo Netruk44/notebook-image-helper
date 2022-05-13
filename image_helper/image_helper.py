@@ -1,7 +1,10 @@
 # ImageHelper is the base class for all image helpers
 #from IPython import display as ipydisplay
 from .generated_images import GeneratedImages
+import glob
 from math import ceil
+import os
+import re
 import torch
 
 class ImageHelper(object):
@@ -113,6 +116,7 @@ class ImageHelper(object):
 
         return GeneratedImages(all_samples, self._generated_samples_range()).to_range(generate_args['output_range']).to_dtype(generate_args['dtype'])
         
+    # "Protected virtual" methods for subclasses to implement
     # Arguments for _generate_samples
     def _get_default_generator_args(self):
         return {}
@@ -122,3 +126,10 @@ class ImageHelper(object):
     
     def _generated_samples_range(self):
         raise NotImplementedError
+    
+    # "Protected" methods for subclasses to use
+    def _get_most_recent_file_matching_pattern(self, dir, pattern, extract_number_fn):
+        matching_paths = glob.glob(os.path.join(dir, pattern))
+        matching_paths = sorted(matching_paths, key=lambda x: extract_number_fn(x))
+        return matching_paths[-1]
+        
