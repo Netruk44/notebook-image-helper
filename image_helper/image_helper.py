@@ -1,0 +1,102 @@
+# ImageHelper is the base class for all image helpers
+#from IPython import display as ipydisplay
+from .generated_images import GeneratedImages
+from math import ceil
+import torch
+
+class ImageHelper(object):
+    # Arguments for __init__
+    def _get_default_init_args(self):
+        return {
+            'device': 'cpu',
+            'max_batch_size': 1,
+            'default_generate_args': self._get_default_generate_args(),
+            'default_generator_args': self._get_default_generator_args(),
+            #'show_progress': False, # TODO
+            #'show_progress_fn': ipydisplay,
+        }
+
+    def __init__(self, **kwargs):
+        """
+        Initialize the ImageHelper.
+
+        Parameters
+        ----------
+        device: str
+            The device to use for the model.
+        max_batch_size: int
+            The maximum batch size to use for the model.
+        default_generate_args: dict
+            The default arguments to use for generate_image.
+        """
+        self.args = self._get_default_init_args()
+        self.args.update(kwargs)
+
+        self.device = self.args['device']
+        self.max_batch_size = self.args['max_batch_size']
+        self.default_generate_args = self.args['default_generate_args']
+        self.default_generator_args = self.args['default_generator_args']
+    
+    # Arguments for generate_images
+    def _get_default_generate_args(self):
+        return {
+            'num_samples': 1,
+            'output_range': (0, 1),
+            'dtype': torch.float32,
+            'show_progress': False,
+            'show_subprogress': False,
+        }
+
+    def generate_images(self, **kwargs):
+        """
+        Generate one or more images.
+
+        Parameters
+        ----------
+        num_samples: int
+            The number of images to generate.
+        output_range: tuple
+            The range of values to output.
+        dtype: torch.dtype
+            The dtype to use for the image.
+        show_progress: bool
+            Whether to show a progress bar during generation (using tqdm).
+        show_subprogress: bool
+            Whether to show a progress bar for each micro-batch (using tqdm).
+        """
+
+        generate_args = self.default_generate_args.copy()
+        generate_args.update(kwargs)
+
+        num_imgs = generate_args['num_samples']
+        max_batch_size = self.max_batch_size
+
+        all_samples = []
+        cur_sample_count = 0
+        r = range(ceil(num_imgs / max_batch_size))
+
+        if generate_args['show_progress']:
+            from tqdm import tqdm
+            r = tqdm(r)
+        
+        for _ in r:
+            batch_size = min(self.max_batch_size, num_imgs - cur_sample_count)
+            
+            all_samples.append(self._generate_samples(**{
+                'num_samples': batch_size,
+                'show_progress': generate_args['show_subprogress'],
+            }))
+        
+        all_samples = torch.cat(all_samples, dim=0)
+
+        return GeneratedImages(all_samples, self._generated_samples_range()).to_range(generate_args['output_range']).to_dtype(generate_args['dtype'])
+        
+    # Arguments for _generate_samples
+    def _get_default_generator_args(self):
+        return {}
+        
+    def _generate_samples(self, **kwargs):
+        raise NotImplementedError
+    
+    def _generated_samples_range(self):
+        raise NotImplementedError
