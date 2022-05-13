@@ -69,23 +69,27 @@ class ImageHelper(object):
         generate_args.update(kwargs)
 
         num_imgs = generate_args['num_samples']
+        show_progress = generate_args['show_progress']
         max_batch_size = self.max_batch_size
 
         all_samples = []
         cur_sample_count = 0
-        r = range(ceil(num_imgs / max_batch_size))
+        bar = None
 
-        if generate_args['show_progress']:
+        if show_progress:
             from tqdm import tqdm
-            r = tqdm(r)
+            bar = tqdm(total=num_imgs)
         
-        for _ in r:
+        for _ in range(ceil(num_imgs / max_batch_size)):
             batch_size = min(self.max_batch_size, num_imgs - cur_sample_count)
             
             all_samples.append(self._generate_samples(**{
                 'num_samples': batch_size,
                 'show_progress': generate_args['show_subprogress'],
             }))
+
+            if show_progress:
+                bar.update(batch_size)
         
         all_samples = torch.cat(all_samples, dim=0)
 
