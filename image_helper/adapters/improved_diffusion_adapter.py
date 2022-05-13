@@ -4,6 +4,7 @@ import torch
 
 # Improved Diffusion Adapter
 # Model Code: https://github.com/openai/improved-diffusion
+# Requires improved_diffusion module available.
 
 class DiffusionImageHelper(ImageHelper):
     
@@ -71,11 +72,8 @@ class DiffusionImageHelper(ImageHelper):
 
         from improved_diffusion import dist_util, logger
         from improved_diffusion.script_util import(
-            NUM_CLASSES,
             model_and_diffusion_defaults,
             create_model_and_diffusion,
-            add_dict_to_argparser,
-            args_to_dict,
         )
 
         network_path = self._determine_best_model_path(model_dir = self.args['model_dir'], use_ema = self.args['use_ema'])
@@ -181,8 +179,6 @@ class UpsampledDiffusionImageHelper(DiffusionImageHelper):
         from improved_diffusion.script_util import (
             sr_model_and_diffusion_defaults,
             sr_create_model_and_diffusion,
-            add_dict_to_argparser,
-            args_to_dict,
         )
         
         # Speed hack, don't actually load before the first run.

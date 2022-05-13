@@ -32,6 +32,10 @@ class ImageHelper(object):
             The maximum batch size to use for the model.
         default_generate_args: dict
             The default arguments to use for generate_image.
+        default_generator_args: dict
+            The arguments to pass to the generator called by generate_image on all runs.
+        debug: bool
+            Whether to print debug messages.
         """
 
         self.args = self._get_default_init_args()
@@ -75,6 +79,8 @@ class ImageHelper(object):
             Whether to show a progress bar during generation (using tqdm).
         show_subprogress: bool
             Whether to show a progress bar for each micro-batch (using tqdm).
+        generator_args: dict
+            Arguments to pass to the generator on this run.
         """
 
         generate_args = self.default_generate_args.copy()
