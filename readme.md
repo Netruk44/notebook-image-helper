@@ -5,10 +5,11 @@ A hobby project. Probably lots of errors lurking beneath the surface, I haven't 
 Notebook Image Helper provides a generic interface to wrap an image generation model, and provides a few helper methods for manipulating the model and its output. Mainly intended for use in Jupyter notebooks.
 
 Current features include:
-    * Automatic splitting of batches using `max_batch_size`.
-    * Automation to load the most recent checkpoint from a folder.
-    * A simpler interface for generating images with code.
-    * Also a simpler interface for interacting with the generated images.
+
+  * Automatic splitting of batches using `max_batch_size`.
+  * Automation to load the most recent checkpoint from a folder.
+  * A simpler interface for generating images with code.
+  * Also a simpler interface for interacting with the generated images.
 
 ## Example Usage
 
