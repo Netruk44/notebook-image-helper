@@ -138,6 +138,7 @@ class ImageHelper(object):
     def _generated_samples_range(self):
         raise NotImplementedError
 
+    # Function should allow being called with no arguments. Optional arguments allowed.
     def _load_model(self):
         raise NotImplementedError
     
