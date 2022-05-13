@@ -52,6 +52,7 @@ class ImageHelper(object):
         self.default_generator_args = self.args['default_generator_args']
         self.debug_print = print if self.args['debug'] else lambda *args, **kwargs: None
 
+        self.network_path = None
         self.reload_model()
     
     # Arguments for generate_images

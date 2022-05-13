@@ -19,7 +19,7 @@ class DiffusionImageHelper(ImageHelper):
             'model_dir': None,    # Path to directory containing model checkpoints. Will load most recent model.
             'use_ema': True,      # Whether to use the EMA checkpoint.
 
-            'skip_first_load': False, # Speed hack to skip loading the model if timestep_respacing isn't defined.
+            'skip_first_load': False, # Speed hack to skip loading the model before generating an image.
             
             # Model parameters
             'creation_args': {
@@ -81,7 +81,7 @@ class DiffusionImageHelper(ImageHelper):
             create_model_and_diffusion,
         )
 
-        network_path = self._determine_best_model_path(model_dir = self.args['model_dir'], use_ema = self.args['use_ema'])
+        self.network_path = self._determine_best_model_path(model_dir = self.args['model_dir'], use_ema = self.args['use_ema'])
         creation_args = model_and_diffusion_defaults()
         creation_args.update(self.args['creation_args'])
 
@@ -100,8 +100,8 @@ class DiffusionImageHelper(ImageHelper):
         self.model, self.diffusion = create_model_and_diffusion(**creation_args)
         
         self.debug_print('Loading network...')
-        self.debug_print(f'  using checkpoint: {network_path}')
-        self.model.load_state_dict(dist_util.load_state_dict(network_path, map_location='cpu'))
+        self.debug_print(f'  using checkpoint: {self.network_path}')
+        self.model.load_state_dict(dist_util.load_state_dict(self.network_path, map_location='cpu'))
 
         self.debug_print('Transferring to device and initializing...')
         self.model.to(self.device)
@@ -191,7 +191,8 @@ class UpsampledDiffusionImageHelper(DiffusionImageHelper):
             self.debug_print("Skipping load...")
             return
 
-        network_path = self._determine_best_model_path(model_dir = self.args['up_model_dir'], use_ema = self.args['up_use_ema'])
+        self.up_network_path = self._determine_best_model_path(model_dir = self.args['up_model_dir'], use_ema = self.args['up_use_ema'])
+        self.network_path = (self.network_path, self.up_network_path)
         creation_args = sr_model_and_diffusion_defaults()
         creation_args.update(self.args['up_creation_args'])
 
@@ -210,8 +211,8 @@ class UpsampledDiffusionImageHelper(DiffusionImageHelper):
         self.up_model, self.up_diffusion = sr_create_model_and_diffusion(**creation_args)
 
         self.debug_print('Loading upsampler network...')
-        self.debug_print(f'  using checkpoint: {network_path}')
-        self.up_model.load_state_dict(dist_util.load_state_dict(network_path, map_location='cpu'))
+        self.debug_print(f'  using checkpoint: {self.up_network_path}')
+        self.up_model.load_state_dict(dist_util.load_state_dict(self.up_network_path, map_location='cpu'))
 
         self.debug_print('Transferring to device and initializing...')
         self.up_model.to(self.device)
