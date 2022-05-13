@@ -152,8 +152,7 @@ class UpsampledDiffusionImageHelper(DiffusionImageHelper):
         init_args = super()._get_default_init_args()
 
         init_args.update({
-            # TODO: Fill out VRAM usage.
-            'max_batch_size': 4,  # Default maximum batch size (batch size 4 uses ~PENDINGGB VRAM for 64x64 images).
+            'max_batch_size': 4,     # Default maximum batch size (batch size 4 uses ~6GB VRAM for both 64 and 256 models).
 
             'up_model_dir': None,    # Path to directory containing upsampler model checkpoints. Will load most recent model.
             'up_use_ema': True,      # Whether to use the EMA checkpoint.
