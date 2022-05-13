@@ -46,8 +46,6 @@ class DiffusionImageHelper(ImageHelper):
 
         super().__init__(**kwargs)
 
-        self._load_model()
-
     def _get_pattern_and_extraction_fn(self, use_ema):
         if use_ema:
             return 'ema_*.pt', lambda x: int(x.split('_')[-1].split('.')[0])

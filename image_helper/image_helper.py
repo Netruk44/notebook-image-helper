@@ -51,6 +51,8 @@ class ImageHelper(object):
         self.default_generate_args = self.args['default_generate_args']
         self.default_generator_args = self.args['default_generator_args']
         self.debug_print = print if self.args['debug'] else lambda *args, **kwargs: None
+
+        self.reload_model()
     
     # Arguments for generate_images
     def _get_default_generate_args(self):
@@ -121,6 +123,9 @@ class ImageHelper(object):
             bar.close()
 
         return GeneratedImages(all_samples, self._generated_samples_range()).to_range(generate_args['output_range']).to_dtype(generate_args['dtype'])
+    
+    def reload_model(self):
+        self._load_model()
         
     # "Protected virtual" methods for subclasses to implement
     # Arguments for _generate_samples
@@ -131,6 +136,9 @@ class ImageHelper(object):
         raise NotImplementedError
     
     def _generated_samples_range(self):
+        raise NotImplementedError
+
+    def _load_model(self):
         raise NotImplementedError
     
     # "Protected" methods for subclasses to use
