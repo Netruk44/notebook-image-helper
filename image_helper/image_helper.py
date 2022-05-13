@@ -30,14 +30,19 @@ class ImageHelper(object):
         default_generate_args: dict
             The default arguments to use for generate_image.
         """
+
         self.args = self._get_default_init_args()
+
+        for k in kwargs:
+            if k not in self.args:
+                print(f'WARNING: Ignoring unknown argument {k}')
+        
         self.args.update(kwargs)
 
         self.device = self.args['device']
         self.max_batch_size = self.args['max_batch_size']
         self.default_generate_args = self.args['default_generate_args']
         self.default_generator_args = self.args['default_generator_args']
-
         self.debug_print = print if self.args['debug'] else lambda *args, **kwargs: None
     
     # Arguments for generate_images
@@ -48,6 +53,7 @@ class ImageHelper(object):
             'dtype': torch.float32,
             'show_progress': False,
             'show_subprogress': False,
+            'generator_args': {},
         }
 
     def generate_images(self, **kwargs):
@@ -86,12 +92,15 @@ class ImageHelper(object):
         
         for _ in range(ceil(num_imgs / max_batch_size)):
             batch_size = min(self.max_batch_size, num_imgs - cur_sample_count)
-            self.debug_print(f'Generating {batch_size} samples...')
-            
-            all_samples.append(self._generate_samples(**{
+
+            current_args = generate_args['generator_args'].copy()
+            current_args.update({
                 'num_samples': batch_size,
                 'show_progress': generate_args['show_subprogress'],
-            }))
+            })
+
+            self.debug_print(f'Generating {batch_size} samples...')
+            all_samples.append(self._generate_samples(**current_args))
 
             if show_progress:
                 bar.update(batch_size)
