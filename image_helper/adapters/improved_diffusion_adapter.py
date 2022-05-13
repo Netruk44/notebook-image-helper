@@ -1,5 +1,6 @@
 from ..image_helper import ImageHelper
 from ..utils import update_dict
+from pathlib import Path
 import torch
 
 # Improved Diffusion Adapter
@@ -54,6 +55,10 @@ class DiffusionImageHelper(ImageHelper):
             return 'model*.pt', lambda x: int(x.split('.')[0].split('model')[-1])
     
     def _determine_best_model_path(self, model_dir, use_ema):
+        # If model_dir is a checkpoint, use that.
+        if Path(model_dir).is_file():
+            return model_dir
+        
         pattern, extract_number_fn = self._get_pattern_and_extraction_fn(use_ema)
         best_model = self._get_most_recent_file_matching_pattern(
             dir = model_dir, 
