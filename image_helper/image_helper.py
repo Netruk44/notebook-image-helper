@@ -132,4 +132,3 @@ class ImageHelper(object):
         matching_paths = glob.glob(os.path.join(dir, pattern))
         matching_paths = sorted(matching_paths, key=lambda x: extract_number_fn(x))
         return matching_paths[-1]
-        
