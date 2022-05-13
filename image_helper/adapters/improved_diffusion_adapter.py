@@ -62,7 +62,7 @@ class DiffusionImageHelper(ImageHelper):
         return best_model
         
     def _load_model(self, timestep_respacing = None):
-        assert self.args['model_dir'] is not None, 'Missing "model_dir" kwarg.'
+        assert self.args['model_dir'] is not None, '"model_dir" not specified.'
 
         # Speed hack, don't actually load before the first run.
         if timestep_respacing is None and self.timestep_respacing is None:
@@ -174,6 +174,8 @@ class UpsampledDiffusionImageHelper(DiffusionImageHelper):
         self._load_upsample_model()
     
     def _load_upsample_model(self, timestep_respacing = None):
+        assert self.args['up_model_dir'] is not None, '"up_model_dir" not specified.'
+        
         # Load upsampler model
         from improved_diffusion import dist_util, logger
         from improved_diffusion.script_util import (
