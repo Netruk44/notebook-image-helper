@@ -41,6 +41,7 @@ class DiffusionImageHelper(ImageHelper):
     def _generate_samples(self, **kwargs):
         generator_args = self.default_generator_args.copy()
         generator_args.update(kwargs)
+        self.debug_print(f'Generating samples with arguments: {generator_args}')
 
         sample_fn = (self.diffusion.p_sample_loop if not generator_args['use_ddim'] else self.diffusion.ddim_sample_loop)
 

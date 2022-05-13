@@ -14,6 +14,7 @@ class ImageHelper(object):
             'default_generator_args': self._get_default_generator_args(),
             #'show_progress': False, # TODO
             #'show_progress_fn': ipydisplay,
+            'debug': False,
         }
 
     def __init__(self, **kwargs):
@@ -36,6 +37,8 @@ class ImageHelper(object):
         self.max_batch_size = self.args['max_batch_size']
         self.default_generate_args = self.args['default_generate_args']
         self.default_generator_args = self.args['default_generator_args']
+
+        self.debug_print = print if self.args['debug'] else lambda *args, **kwargs: None
     
     # Arguments for generate_images
     def _get_default_generate_args(self):
@@ -67,6 +70,7 @@ class ImageHelper(object):
 
         generate_args = self.default_generate_args.copy()
         generate_args.update(kwargs)
+        self.debug_print(f'Generating images with arguments: {generate_args}')
 
         num_imgs = generate_args['num_samples']
         show_progress = generate_args['show_progress']
@@ -82,6 +86,7 @@ class ImageHelper(object):
         
         for _ in range(ceil(num_imgs / max_batch_size)):
             batch_size = min(self.max_batch_size, num_imgs - cur_sample_count)
+            self.debug_print(f'Generating {batch_size} samples...')
             
             all_samples.append(self._generate_samples(**{
                 'num_samples': batch_size,
@@ -93,6 +98,9 @@ class ImageHelper(object):
             cur_sample_count += batch_size
         
         all_samples = torch.cat(all_samples, dim=0)
+
+        if show_progress:
+            bar.close()
 
         return GeneratedImages(all_samples, self._generated_samples_range()).to_range(generate_args['output_range']).to_dtype(generate_args['dtype'])
         
