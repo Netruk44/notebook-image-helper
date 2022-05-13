@@ -5,14 +5,18 @@ from ..image_helper import ImageHelper
 
 class DiffusionImageHelper(ImageHelper):
     def _get_default_init_args(self):
-        return {
-            #'model_dir': None, # Path to directory containing model checkpoints. Will load most recent model.
-            #'use_ema': True,   # Whether to use the EMA checkpoint.
+        init_args = super()._get_default_init_args()
+
+        init_args.update({
+            #'model_dir': None,   # Path to directory containing model checkpoints. Will load most recent model.
+            #'use_ema': True,     # Whether to use the EMA checkpoint.
             'model': None,
             'diffusion': None,
-            'image_size': None, # The size of image that is generated. TODO: Needed? Can't we just check the properties of the model?
-            **super()._get_default_init_args()
-        }
+            'image_size': None,   # The size of image that is generated. TODO: Needed? Can't we just check the properties of the model?
+            'max_batch_size': 4,  # Default maximum batch size (batch size 4 uses ~3GB VRAM for 64x64 images).
+        })
+
+        return init_args
     
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
