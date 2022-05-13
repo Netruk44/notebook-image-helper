@@ -18,6 +18,8 @@ class DiffusionImageHelper(ImageHelper):
 
             'model_dir': None,    # Path to directory containing model checkpoints. Will load most recent model.
             'use_ema': True,      # Whether to use the EMA checkpoint.
+
+            'skip_first_load': False, # Speed hack to skip loading the model if timestep_respacing isn't defined.
             
             # Model parameters
             'creation_args': {
@@ -69,7 +71,7 @@ class DiffusionImageHelper(ImageHelper):
         assert self.args['model_dir'] is not None, '"model_dir" not specified.'
 
         # Speed hack, don't actually load before the first run.
-        if timestep_respacing is None and self.timestep_respacing is None:
+        if self.args['skip_first_load'] and timestep_respacing is None and self.timestep_respacing is None:
             self.debug_print("Skipping load...")
             return
 
